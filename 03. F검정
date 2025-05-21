@@ -1,0 +1,31 @@
+🔍 1. F검정이란?
+F검정은 두 개 이상의 분산 또는 회귀 모형을 비교하기 위한 검정 방법
+
+F통계량은 다음과 같이 계산됩니다: F = 변동성1/변동성2 = 큰 분산/작은 분산
+-> Fㄱ밧이 1에서 멀어질수록, 두 집단의 분산 차이가 통계적으로 유의하다고 판단
+
+✅ 대표적인 F검정의 종류
+등분산성 검정: 두 집단의 분산이 같은지 검정                          /t-test 전에 가정 확인용
+ANOVA(분산분석): 세 집단 이상의 평균 차이 검정                       /여러 그룹 평균 비교
+회귀모형의 유의성 검정: 회귀식 전체가 통계적으로 의미가 있는지 검정    /회귀분석의 F-test
+
+✅ F검정 전에 확인해야 할 것들
+1. 정규성 가정 (Normality)
+shapiro.test(group1)  
+shapiro.test(group2)
+
+2. 독립성 (Independence)
+3. 연속형 자료
+4. 극단값(Outlier)의 영향 고려
+boxplot(group1, group2)  # 이상치 시각화
+
+✳️ 등분산 검정
+var.test(group1, group2)
+
+✳️ ANOVA (분산분석)
+result <- aov(score ~ group, data = df)
+summary(result)
+
+✅ 회귀모형의 유의성 검정
+model <- lm(y ~ x1 + x2, data = df)
+summary(model)
