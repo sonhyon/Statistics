@@ -33,3 +33,43 @@ summary(anova_result)
 # 사후 검정 (Post-hoc Test: Tukey HSD)
 TukeyHSD(anova_result)
 
+🧪 이원분산분석 (Two-Way ANOVA)
+# 데이터 생성
+set.seed(123)
+교육방법 <- factor(rep(c("A", "B", "C"), each = 20))
+성별 <- factor(rep(rep(c("남", "여"), each = 10), times = 3))
+점수 <- rnorm(60, mean = rep(c(70, 75, 80), each = 20), sd = 5)
+
+data <- data.frame(교육방법, 성별, 점수)
+
+# 이원분산분석
+anova_result <- aov(점수 ~ 교육방법 * 성별, data = data)
+summary(anova_result)
+
+🧪 반복측정분산분석 (Repeated Measures ANOVA)
+library(tidyr)
+library(ez)
+
+# 데이터 생성 (wide format)
+set.seed(123)
+data_wide <- data.frame(
+  id = 1:10,
+  시험1 = rnorm(10, 70, 5),
+  시험2 = rnorm(10, 75, 5),
+  시험3 = rnorm(10, 80, 5)
+)
+
+# long format으로 변환
+data_long <- pivot_longer(data_wide, cols = 시험1:시험3,
+                          names_to = "시험", values_to = "점수")
+
+# 반복측정 ANOVA
+result <- ezANOVA(
+  data = data_long,
+  dv = 점수,
+  wid = id,
+  within = .(시험),
+  detailed = TRUE
+)
+
+print(result)
