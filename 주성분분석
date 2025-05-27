@@ -1,0 +1,42 @@
+📘 주성분분석(PCA)이란?
+✅ 목적
+차원 축소(Dimensionality Reduction)
+서로 상관된 변수들을 직교한(uncorrelated) 축으로 변환
+데이터의 분산을 최대한 보존하는 선형 조합을 찾는 것
+
+✅ 주요 개념
+주성분(Principal Components): 원래 변수들의 선형 조합
+분산(Variance): 각 주성분이 설명하는 데이터의 정보량
+고유값 분해(Eigendecomposition): 공분산 행렬을 고유값과 고유벡터로 분해
+
+🧮 R에서 PCA 수행 절차
+1️⃣ 데이터 준비 및 정규화
+data(iris)
+df <- iris[, -5]  # 종(Species) 변수 제외
+
+# 정규화 (권장: 각 변수의 단위가 다를 경우)
+df_scaled <- scale(df)
+
+2️⃣ PCA 수행
+pca_result <- prcomp(df_scaled, center = TRUE, scale. = TRUE)
+
+3️⃣ 결과 확인
+# 요약 정보
+summary(pca_result)
+
+# 주성분 별 분산(설명력)
+pca_result$sdev^2 / sum(pca_result$sdev^2)
+
+# 로딩값 (각 변수와 주성분 간의 관계)
+pca_result$rotation
+
+# 주성분 점수 (새로운 축 기준의 데이터)
+head(pca_result$x)
+
+4️⃣ 시각화
+# Scree plot (설명력 시각화)
+plot(pca_result, type = "l")
+
+# 주성분 2개 기준 산점도
+biplot(pca_result, scale = 0)
+
