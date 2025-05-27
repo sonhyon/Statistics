@@ -20,12 +20,16 @@ pca_result <- prcomp(df_scaled, center = TRUE, scale. = TRUE) #prcomp() 함수�
 
 3️⃣ 결과 확인
 summary(pca_result)
-pca_result$sdev^2 / sum(pca_result$sdev^2) #주성분 별 분산(설명력)
+explained_var <- pca_result$sdev^2
+explained_var_ratio <- explained_var / sum(explained_var) #주성분 별 분산(설명력)
 pca_result$rotation #로딩값 (각 변수와 주성분 간의 관계)
 head(pca_result$x) #주성분 점수 (새로운 축 기준의 데이터)
 
 4️⃣ 시각화
-plot(pca_result, type = "l") #Scree plot (설명력 시각화)
+plot(explained_var_ratio, type = "b",
+     xlab = "Principal Component",
+     ylab = "Proportion of Variance Explained",
+     main = "Elbow Plot")
 set.seed(1)
 kmeans_result <- kmeans(selected_pcs, centers = 3)
 plot(selected_pcs, col = kmeans_result$cluster)
