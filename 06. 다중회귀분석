@@ -22,15 +22,7 @@ data(mtcars)
 str(mtcars)
 summary(mtcars)
 
-📌 1. 회귀 모델의 의미 및 검정 이해
-# 모델 적합
-model <- lm(mpg ~ wt + hp + disp, data = mtcars)
-summary(model)
-
-# t-검정: Coefficients에서 각 변수의 Pr(>|t|)
-# F-검정: summary(model) 맨 아래 F-statistic
-
-✅ 2. 변수 선택 과정
+✅ 1. 변수 선택 과정
 2-1. 상관관계 확인
 cor(mtcars[, c("mpg", "wt", "hp", "disp", "drat", "qsec")])
 
@@ -43,6 +35,14 @@ library(MASS)
 full_model <- lm(mpg ~ ., data = mtcars)
 step_model <- stepAIC(full_model, direction = "both")
 summary(step_model)
+
+✅ 2. 회귀 모델의 의미 및 검정 이해
+# 모델 적합
+model <- lm(mpg ~ wt + hp + disp, data = mtcars)
+summary(model)
+
+# t-검정: Coefficients에서 각 변수의 Pr(>|t|)
+# F-검정: summary(model) 맨 아래 F-statistic
 
 ✅ 3. 질적 변수 처리
 # 질적 변수로 변환 (factor 처리)
