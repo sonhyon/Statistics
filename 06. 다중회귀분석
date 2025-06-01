@@ -1,0 +1,87 @@
+📌 1. 회귀검정이란?
+회귀분석 모델 예시
+𝑌=𝛽0+𝛽1𝑋1+𝛽2𝑋2+⋯+𝛽𝑘𝑋𝑘+𝜀
+
+● t-검정 (개별 변수 검정)
+목적: 각 회귀계수(βₖ)가 유의미한 영향을 미치는지 검정
+귀무가설 H₀: βᵢ = 0 (해당 독립변수는 영향이 없다)
+대립가설 H₁: βᵢ ≠ 0
+summary(model) 결과에서 Coefficients의 Pr(>|t|)를 봄
+
+● F-검정 (전체 모델 유의성 검정)
+목적: 모든 독립변수가 종속변수에 영향을 주는지 종합적으로 검정
+귀무가설 H₀: β₁ = β₂ = ... = βₖ = 0
+대립가설 H₁: 적어도 하나는 0이 아니다
+summary(model)의 맨 아래 F-statistic 확인
+
+✅ 3. 변수 선택
+● 상관관계 분석
+cor(df)  # 연속형 변수 간 상관계수 확인
+
+● 다중공선성(Multicollinearity) 확인
+독립변수 간 상관관계가 너무 높으면 회귀계수 왜곡 발생
+VIF > 10이면 다중공선성 의심
+library(car)
+model <- lm(mpg ~ wt + hp + disp, data = mtcars)
+vif(model)
+
+● 변수 선택 기법 (모델 단순화)
+library(MASS)
+stepAIC(model, direction = "both")
+
+✅ 4. 회귀모형 적합
+model <- lm(mpg ~ wt + hp + disp, data = mtcars)
+summary(model)
+
+회귀계수 추정값: Estimate
+t-검정 결과: Pr(>|t|) (개별 변수 유의성)
+F-검정 결과: F-statistic (모형 전체 유의성)
+설명력: R-squared / Adjusted R-squared
+
+✅ 5. 회귀모형의 가정 검토 (잔차 진단)
+1) 선형성 (Linearity)
+독립변수와 종속변수가 선형 관계인지
+plot(mtcars$wt, mtcars$mpg)
+abline(lm(mpg ~ wt, data = mtcars), col = "red")
+
+2) 등분산성 (Homoscedasticity)
+오차항이 서로 독립적인지
+plot(model$fitted.values, resid(model),
+     main = "잔차 vs 예측값")
+abline(h = 0, col = "red")
+
+library(lmtest)
+bptest(model)  # Breusch-Pagan test (p > 0.05 → 등분산성 만족)
+
+3) 독립성 (Independence)
+library(lmtest)
+dwtest(model)  # Durbin-Watson test (DW ≈ 2면 독립성 만족)
+
+4) 정규성 (Normality)
+잔차가 정규분포를 따르는지
+qqnorm(resid(model))
+qqline(resid(model), col = "blue")
+shapiro.test(resid(model))  # p > 0.05 → 정규성 만족
+
+✅ 6. 질적 변수 포함
+범주형 변수는 자동으로 더미(dummy) 변수 처리됨
+model <- lm(mpg ~ wt + gear + am, data = mtcars)
+summary(model)
+
+gear, am 등은 범주형(factor)으로 설정 필요
+mtcars$gear <- factor(mtcars$gear)
+mtcars$am <- factor(mtcars$am)
+
+✅ 7. 동일성 검정 / 상호작용 검정 (Optional)
+그룹(예: 성별)에 따라 회귀계수가 달라지는지 검정
+model1 <- lm(mpg ~ wt + gender, data = df)
+model2 <- lm(mpg ~ wt * gender, data = df)  # 상호작용 포함
+anova(model1, model2)  # 두 모델 비교
+유의미한 차이가 있다면 → 회귀모형을 그룹별로 따로 추정해야 함
+
+✅ 6. 회귀검정 실행하기
+model <- lm(mpg ~ wt, data = mtcars)
+summary(model)
+                
+
+
