@@ -1,0 +1,46 @@
+✅ 1. MANOVA란?
+여러 개의 연속형 종속변수가 하나 이상의 **범주형 독립변수(집단)**에 따라 동시에 차이를 보이는지를 분석하는 방법입니다.
+예: 수업 방식(오프라인/온라인)에 따라 학생들의 성적과 만족도 모두에 차이가 있는지를 알고 싶을 때
+
+✅ 2. MANOVA와 ANOVA의 차이점
+| 항목        | ANOVA | MANOVA         |
+| 종속변수    | 1개    | 2개 이상       |
+
+✅ 3. 분석 전 점검해야 할 가정(전제 조건)
+① 정규성 (Multivariate Normality)
+by(iris[, 1:4], iris$Species, function(x) apply(x, 2, shapiro.test))
+
+② 등분산/등공분산성 (Homogeneity of Covariance Matrices)
+# install.packages("biotools")
+library(biotools)
+
+boxM_result <- boxM(cbind(Sepal.Length, Sepal.Width) ~ Species, data = iris)
+boxM_result # p-value > 0.05이면 등공분산 가정 만족
+
+③ 독립성
+- 통계적으로 검정하기는 어렵고, 실험 설계 단계에서 독립적으로 샘플이 수집되었는지 확인해야 합니다.
+- 데이터가 종속적으로 수집되었다면, MANOVA는 적절하지 않습니다. 예: 동일한 학생의 반복 측정 결과 → 반복 측정 MANOVA 필요
+
+✅ 4. R에서의 구현
+# 데이터 확인
+head(iris)
+
+# MANOVA 실행: 두 개의 종속변수(Sepal.Length, Sepal.Width)
+manova_result <- manova(cbind(Sepal.Length, Sepal.Width) ~ Species, data = iris)
+
+# 결과 요약
+summary(manova_result, test = "Pillai")   # 다른 옵션: "Wilks", "Hotelling-Lawley", "Roy"
+
+✅ 5. 사후분석 (Post-hoc Analysis)
+MANOVA가 유의하다고 나왔으면, 어떤 종속변수가 차이를 유발하는지 확인하는 사후 분석이 필요합니다.
+
+summary.aov(manova_result) # 각 종속변수에 대해 개별 ANOVA 실시
+
+✅ 6. 시각화
+집단별 평균 벡터 시각화 (ggplot2 + stat_ellipse 사용)
+library(ggplot2)
+
+ggplot(iris, aes(x = Sepal.Length, y = Sepal.Width, color = Species)) +
+  geom_point() +
+  stat_ellipse(type = "norm") +
+  theme_minimal()
