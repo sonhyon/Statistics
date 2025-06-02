@@ -1,0 +1,70 @@
+🔍 요인분석이란?
+많은 변수들 간의 상관관계를 바탕으로, 이들을 설명할 수 있는 **적은 수의 잠재 요인(factors)**을 찾아냅니다.
+예를 들어 10개의 문항이 있다면, 이들이 사실상 2~3개의 공통된 특성(예: 자기효능감, 외향성 등)으로 요약될 수 있다고 보는 것.
+**탐색적 요인분석(EFA, Exploratory Factor Analysis)**과 확인적 요인분석(CFA, Confirmatory Factor Analysis) 두 가지가 있습니다. R에서는 보통 EFA를 먼저 수행합니다.
+
+✅ 요인분석의 주요 단계
+- 적합성 검사
+변수들이 요인분석에 적합한지 확인
+사용 지표: KMO(Kaiser-Meyer-Olkin), Bartlett's Test
+
+- 요인 수 결정
+기준: 고유값(eigenvalue) > 1, Scree Plot
+
+- 요인 추출 방법 선택
+주로 사용되는 방법: Principal Axis Factoring, Maximum Likelihood 등
+
+- 요인 회전(Rotation)
+목적: 해석 용이성 증가
+방법: Varimax (직교 회전), Oblimin (비직교 회전)
+
+- 요인 해석 및 요인 점수 산출
+
+install.packages("psych")
+install.packages("GPArotation")
+library(psych)
+library(GPArotation)
+
+set.seed(123)
+
+# 요인 점수 2개 (숨겨진 잠재 변수)
+n <- 200
+factor1 <- rnorm(n)  # 내향성 요인
+factor2 <- rnorm(n)  # 외향성 요인
+
+# 각 문항 = 요인 점수 * 적재량 + 오차항
+data <- data.frame(
+  Q1 = 0.7 * factor1 + rnorm(n, sd = 0.3),  # 내향성 관련
+  Q2 = 0.6 * factor1 + rnorm(n, sd = 0.3),
+  Q3 = 0.8 * factor1 + rnorm(n, sd = 0.3),
+  Q4 = 0.7 * factor2 + rnorm(n, sd = 0.3),  # 외향성 관련
+  Q5 = 0.6 * factor2 + rnorm(n, sd = 0.3),
+  Q6 = 0.75 * factor2 + rnorm(n, sd = 0.3)
+)
+
+[R]
+# 리커트 척도로 변환 (1~5)
+data <- round(data)
+data[data < 1] <- 1
+data[data > 5] <- 5
+
+# 결과 확인
+head(data)
+
+# KMO 검정
+KMO(data)
+
+# Bartlett의 구형성 검정
+cortest.bartlett(cor(data), n = nrow(data))
+
+fa.parallel(data, fa = "fa")  # EFA 기준으로 결정
+
+# 요인 2개 추출, Varimax 회전
+result <- fa(data, nfactors = 2, rotate = "varimax", fm = "ml")
+print(result)
+
+print(result$loadings, cutoff = 0.4)  # 0.4 이상만 출력
+
+factor_scores <- factor.scores(data, result)
+head(factor_scores$scores)
+
